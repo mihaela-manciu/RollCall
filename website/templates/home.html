@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+{% if user.is_authenticated %}
+    <h1>Welcome, {{ user.username }}!</h1>
+    <div class="button-container">
+        <button class="class-button" onclick="window.location.href='{% url 'class_attendance' 'A' %}'">Class A</button>
+        <button class="class-button" onclick="window.location.href='{% url 'class_attendance' 'B' %}'">Class B</button>
+        <button class="class-button" onclick="window.location.href='{% url 'class_attendance' 'C' %}'">Class C</button>
+      </div>
+    {% block extra_css %}
+        <style>
+          .button-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 80vh;
+          }
+          .class-button {
+            width: 30%;
+            height: 30vh;
+            font-size: 5rem;
+            background-color: #1f56c6;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+          }
+          .class-button:hover {
+            background-color: #17426e;
+          }
+        </style>
+    {% endblock %}
+{% else %}
+    <div class="col-md-6 offset-md-3">
+    <h1>Login</h1>
+    <br/>
+    <form method="POST" action="{% url 'home' %}">
+        {% csrf_token %}
+      <div class="mb-3">
+        <input type="text" class="form-control" name="username", placeholder="Username" required>
+      </div><br/>
+      <div class="mb-3">
+        <input type="password" class="form-control" name="password", placeholder="Password" required>
+      </div>
+      <br/>
+      <button type="submit" class="btn btn-secondary">Login</button>
+    </form>
+{% endif %}
+{% endblock %}
+</div>

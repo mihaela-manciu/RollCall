@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Record Attendance</title>
+    <script>
+        function startCamera() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    document.getElementById('video').srcObject = stream;
+                });
+        }
+
+        function captureImage() {
+            const video = document.getElementById('video');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            const image_data = canvas.toDataURL('image/png');
+            fetch("{% url 'record_attendance_view' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: `image=${encodeURIComponent(image_data)}`
+            }).then(response => response.json())
+              .then(data => {
+                document.getElementById('recognized_faces').innerText = JSON.stringify(data.recognized_faces);
+                document.getElementById('attendance_records').innerText = JSON.stringify(data.attendance_records);
+              });
+        }
+    </script>
+</head>
+<body onload="startCamera()">
+    <h1>Record Attendance</h1>
+    <video id="video" autoplay></video>
+    <button onclick="captureImage()">Capture</button>
+    <h2>Recognized Faces:</h2>
+    <pre id="recognized_faces"></pre>
+    <h2>Attendance Records:</h2>
+    <pre id="attendance_records"></pre>
+    <a href="{% url 'home' %}">Back to Home</a>
+</body>
+</html>
